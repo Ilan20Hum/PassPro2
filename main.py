@@ -12,6 +12,48 @@ def is_frozen():
     return getattr(sys, "frozen", False)
 
 
+def set_windows_app_id():
+    """Make Windows taskbar use our EXE icon instead of a generic Python icon."""
+    if sys.platform != "win32":
+        return
+    try:
+        import ctypes
+
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+            "IlanMarkov.PassPro2.1"
+        )
+    except Exception:
+        pass
+
+
+def apply_window_icon(window):
+    """Set title-bar + taskbar icon for a Tk window (ICO + PNG)."""
+    ico = resource_path(os.path.join("assets", "passico.ico"))
+    png = resource_path(os.path.join("assets", "passico.png"))
+    png64 = resource_path(os.path.join("assets", "passico64.png"))
+    try:
+        if os.path.exists(ico):
+            window.iconbitmap(default=ico)
+            window.iconbitmap(ico)
+    except Exception:
+        try:
+            if os.path.exists(ico):
+                window.iconbitmap(ico)
+        except Exception:
+            pass
+    try:
+        images = []
+        for path in (png, png64):
+            if os.path.exists(path):
+                images.append(tk.PhotoImage(file=path))
+        if images:
+            window.iconphoto(True, *images)
+            # Keep references so Tk does not garbage-collect the images
+            window._passpro_icons = images
+    except Exception:
+        pass
+
+
 def bundle_dir():
     """Read-only resources bundled by PyInstaller (or project root in dev)."""
     if is_frozen():
@@ -292,10 +334,7 @@ def changeShortInfo():
     y = root.winfo_y()
     toplevel.geometry("+%d+%d" % (x + 200, y + 200))
     toplevel.geometry("235x170")
-    try:
-        toplevel.iconbitmap(resource_path(os.path.join("assets", "passico.ico")))
-    except Exception:
-        pass
+    apply_window_icon(toplevel)
     toplevel.resizable(False, False)
     toplevel.wm_transient(root)
 
@@ -327,6 +366,9 @@ def changeShortInfo():
     xfile.save(file2)
 
 
+# Must run before creating any Tk window so the Windows taskbar picks our icon.
+set_windows_app_id()
+
 file2 = ensure_data_file()
 xfile = load_workbook(file2)
 sheets = xfile.sheetnames
@@ -341,10 +383,7 @@ root.title("PassPro")
 root.geometry("650x400")
 root.resizable(False, False)
 style = ttk.Style(root)
-try:
-    root.iconbitmap(resource_path(os.path.join("assets", "passico.ico")))
-except Exception:
-    pass
+apply_window_icon(root)
 root.tk.call("source", resource_path(os.path.join("assets", "forest-light.tcl")))
 root.tk.call("source", resource_path(os.path.join("assets", "forest-dark.tcl")))
 style.theme_use("forest-dark")

@@ -9,6 +9,8 @@ datas = [
     ("assets/forest-dark.tcl", "assets"),
     ("assets/forest-light.tcl", "assets"),
     ("assets/passico.ico", "assets"),
+    ("assets/passico.png", "assets"),
+    ("assets/passico64.png", "assets"),
     ("assets/data2.template.xlsx", "assets"),
     ("assets/forest-dark", "assets/forest-dark"),
     ("assets/forest-light", "assets/forest-light"),
