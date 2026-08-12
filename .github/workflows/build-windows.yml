@@ -33,6 +33,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path release/PassPro2/assets | Out-Null
           Copy-Item -Recurse dist/PassPro2/* release/PassPro2/
           Copy-Item assets/data2.template.xlsx release/PassPro2/assets/data2.template.xlsx
+          if (Test-Path Run-PassPro2.bat) { Copy-Item Run-PassPro2.bat release/PassPro2/Run-PassPro2.bat }
           @"
           PassPro2 - ready to run
           =======================
