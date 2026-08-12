@@ -314,7 +314,7 @@ def changeShortInfo():
     MainEntey.grid(row=0, column=1, sticky="w", pady=5, padx=3)
     SecEntry.grid(row=1, column=1, sticky="w", pady=5, padx=3)
     IdEntry.grid(row=2, column=1, sticky="w", pady=5, padx=3)
-    Srow = getShortInfoProp()
+    Srow = getShortInfoRow()
 
     MainEntey.insert(0, Srow[0])
     SecEntry.insert(0, Srow[1])

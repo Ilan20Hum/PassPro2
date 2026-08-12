@@ -4,6 +4,19 @@ Desktop password manager for Windows — save and search names, passwords, email
 
 **Passwords stay only in `assets/data2.xlsx` on your PC. That file is gitignored and is never pushed to GitHub.**
 
+## Download ready-to-use app (Windows)
+
+After each update to `main`, GitHub builds a Windows ZIP automatically:
+
+1. Open: **https://github.com/Ilan20Hum/PassPro2/actions**
+2. Click the latest green **Build Windows EXE** run
+3. Scroll to **Artifacts** → download **PassPro2-Windows**
+4. Unzip to a local folder (example: `C:\PassPro2`)
+5. Copy your old `assets\data2.xlsx` into the unzipped `assets\` folder (keeps your passwords)
+6. Run **`PassPro2.exe`** or **`Run-PassPro2.bat`**
+
+Tagged releases (when available): **https://github.com/Ilan20Hum/PassPro2/releases**
+
 ## Setup (development)
 
 ```bat

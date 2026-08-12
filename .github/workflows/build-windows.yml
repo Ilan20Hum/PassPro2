@@ -1,0 +1,65 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build with PyInstaller
+        run: pyinstaller --noconfirm PassPro2.spec
+
+      - name: Prepare download folder
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path release/PassPro2/assets | Out-Null
+          Copy-Item -Recurse dist/PassPro2/* release/PassPro2/
+          Copy-Item assets/data2.template.xlsx release/PassPro2/assets/data2.template.xlsx
+          @"
+          PassPro2 - ready to run
+          =======================
+
+          1. Copy your existing password file (if you have one):
+             assets\data2.xlsx  ->  next to PassPro2.exe in assets\
+
+          2. Run: PassPro2.exe
+
+          3. If Windows blocks the app: More info -> Run anyway
+
+          4. Prefer a local folder (e.g. C:\PassPro2), not a deep OneDrive path.
+
+          Your passwords stay only in assets\data2.xlsx on your PC.
+          "@ | Set-Content -Encoding UTF8 release/PassPro2/README-FIRST.txt
+          Compress-Archive -Path release/PassPro2 -DestinationPath PassPro2-Windows.zip
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PassPro2-Windows
+          path: PassPro2-Windows.zip
+          retention-days: 90
+
+      - name: Create GitHub Release (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: PassPro2-Windows.zip
+          generate_release_notes: true
